@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <h1>Регистрация тренировки</h1>
+    <form action="{{ url_for('log_workout') }}" method="post" class="workout-form">
+        <label for="date">Дата:</label>
+        <input type="date" id="date" name="date" required><br> 
+        <label for="activity_type">Тип активности:</label>
+        <select id="activity_type" name="activity_type" required>
+            <option value="">Выберите тип</option>
+            <option value="Бег">Бег</option>
+            <option value="Плавание">Плавание</option>
+            <option value="Силовая тренировка">Силовая тренировка</option>
+            <option value="Йога">Йога</option>
+            <option value="Велосипед">Велосипед</option>
+            <option value="Ходьба">Ходьба</option>
+            <option value="Другое">Другое</option>
+        </select><br>
+
+        <label for="duration_minutes">Длительность (мин):</label>
+        <input type="number" id="duration_minutes" name="duration_minutes" min="1" required><br>
+
+        <label for="calories_burned">Потрачено калорий:</label>
+        <input type="number" id="calories_burned" name="calories_burned" min="1" required><br>
+
+        <button type="submit">Добавить тренировку</button>
+    </form>
+
+    
+{% endblock %}
