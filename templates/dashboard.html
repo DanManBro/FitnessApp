@@ -1,0 +1,125 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <h1>Панель аналитики {{ title }}</h1>
+
+    <div class="filter-buttons">
+        <a href="{{ url_for('dashboard', period_str='week') }}" class="button {% if current_period == 'week' %}active{% endif %}">Неделя</a>
+        <a href="{{ url_for('dashboard', period_str='month') }}" class="button {% if current_period == 'month' %}active{% endif %}">Месяц</a>
+        <a href="{{ url_for('dashboard', period_str='all') }}" class="button {% if current_period == 'all' %}active{% endif %}">Весь период</a>
+    </div>
+
+    {% if chart_dates %}
+        <div class="summary">
+            <h3>Общие итоги за период:</h3>
+            <p>Всего калорий сожжено: <strong>{{ overall_totals.overall_calories | default(0) }}</strong></p>
+            <p>Общая длительность тренировок: <strong>{{ overall_totals.overall_duration | default(0) }} мин</strong></p>
+        </div>
+
+        <div class="chart-container">
+            <h3>Калории по дням</h3>
+            <canvas id="caloriesChart"></canvas>
+        </div>
+
+        <div class="chart-container">
+            <h3>Длительность тренировок по дням (мин)</h3>
+            <canvas id="durationChart"></canvas>
+        </div>
+
+        <!-- Подключаем Chart.js -->
+        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+        <script>
+            // Данные, переданные из Flask
+            const dates = {{ chart_dates | tojson }};
+            const calories = {{ chart_calories | tojson }};
+            const duration = {{ chart_duration | tojson }};
+
+            // График калорий
+            new Chart(document.getElementById('caloriesChart'), {
+                type: 'bar', // Тип графика: столбчатый
+                data: {
+                    labels: dates, // Даты по оси X
+                    datasets: [{
+                        label: 'Потраченные калории',
+                        data: calories, // Значения калорий по оси Y
+                        backgroundColor: 'rgba(255, 99, 132, 0.5)', // Цвет столбцов
+                        borderColor: 'rgba(255, 99, 132, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'Калории'
+                            }
+                        },
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Дата'
+                            }
+                        }
+                    },
+                    plugins: {
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return context.dataset.label + ': ' + context.parsed.y + ' ккал';
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+
+            // График длительности
+            new Chart(document.getElementById('durationChart'), {
+                type: 'line', // Тип графика: линейный
+                data: {
+                    labels: dates,
+                    datasets: [{
+                        label: 'Длительность тренировок',
+                        data: duration,
+                        backgroundColor: 'rgba(54, 162, 235, 0.5)',
+                        borderColor: 'rgba(54, 162, 235, 1)',
+                        borderWidth: 1,
+                        fill: false // Не заполнять область под линией
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'Длительность (мин)'
+                            }
+                        },
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Дата'
+                            }
+                        }
+                    },
+                    plugins: {
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return context.dataset.label + ': ' + context.parsed.y + ' мин';
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        </script>
+    {% else %}
+        <p>Нет данных для выбранного периода. Попробуйте выбрать другой период или <a href="{{ url_for('index') }}">добавить тренировки</a>.</p>
+    {% endif %}
+{% endblock %}

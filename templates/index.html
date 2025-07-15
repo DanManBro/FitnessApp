@@ -4,7 +4,7 @@
     <h1>Регистрация тренировки</h1>
     <form action="{{ url_for('log_workout') }}" method="post" class="workout-form">
         <label for="date">Дата:</label>
-        <input type="date" id="date" name="date" required><br>
+        <input type="date" id="date" name="date" ><br>
 
         <label for="activity_type">Тип активности:</label>
         <select id="activity_type" name="activity_type" required>
@@ -43,7 +43,7 @@
                 <tr>
                     <td>{{ workout.date }}</td>
                     <td>{{ workout.activity_type }}</td>
-                    <td>{{ workout.duration_minutes}}</td>
+                    <td>{{ workout.duration_minutes }}</td>
                     <td>{{ workout.calories_burned }}</td>
                 </tr>
                 {% endfor %}
@@ -53,5 +53,3 @@
         <p>Пока нет зарегистрированных тренировок.</p>
     {% endif %}
 {% endblock %}
-
-
